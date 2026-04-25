@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsx:*)",
+      "Bash(kill %1)",
+      "Bash(wait)",
+      "Bash(npx tsc:*)",
+      "Bash(node --input-type=module)",
+      "Bash(sc query:*)",
+      "Bash(net start:*)",
+      "Bash(docker --version)",
+      "Bash(where psql:*)"
+    ]
+  }
+}
