@@ -60,7 +60,7 @@ export async function productsRoutes(fastify: FastifyInstance) {
     )
 
     const { rows: [{ count }] } = await query(
-      `SELECT COUNT(*) FROM products WHERE ${where}`,
+      `SELECT COUNT(*) FROM products p WHERE ${where}`,
       params
     )
 

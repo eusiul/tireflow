@@ -34,8 +34,20 @@ async function migrate() {
         .filter((f) => f.endsWith('.sql'))
         .sort()
     } catch {
-      console.log('No migrations directory found. Creating initial schema from DATABASE_SCHEMA.sql...')
-      // Fall back to the root schema file
+      console.log('No migrations directory found. Checking initial schema...')
+
+      // Check if schema is already applied
+      const { rows: existing } = await client.query(
+        `SELECT to_regclass('public.tenants') AS tbl`
+      )
+      if (existing[0]?.tbl) {
+        console.log('  ⏭  Schema already applied — registering migration record')
+        await client.query(`INSERT INTO _migrations (filename) VALUES ('000_initial_schema.sql') ON CONFLICT DO NOTHING`)
+        console.log('✅ Done')
+        return
+      }
+
+      // Apply schema for the first time
       const schemaPath = resolve(__dirname, '../../../DATABASE_SCHEMA.sql')
       const sql = readFileSync(schemaPath, 'utf8')
       await client.query('BEGIN')

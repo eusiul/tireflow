@@ -56,7 +56,10 @@ export async function whatsappRoutes(fastify: FastifyInstance) {
     const body = schema.safeParse(request.body)
     if (!body.success) return reply.code(400).send({ error: 'Invalid input' })
 
-    const { rows: [so] } = await query(
+    const { rows: [so] } = await query<{
+      id: string; phone: string | null; client_name: string | null
+      vehicle_desc: string | null; vehicle_plate: string | null; tenant_id: string
+    }>(
       `SELECT so.*, c.name as client_name, c.phone
        FROM service_orders so
        LEFT JOIN clients c ON c.id = so.client_id
@@ -69,7 +72,7 @@ export async function whatsappRoutes(fastify: FastifyInstance) {
 
     await whatsapp.notifyServiceReady({
       phone: so.phone,
-      clientName: so.client_name,
+      clientName: so.client_name ?? '',
       vehicle: so.vehicle_desc ?? 'Veículo',
       plate: so.vehicle_plate ?? '',
     })
@@ -151,26 +154,26 @@ export async function whatsappRoutes(fastify: FastifyInstance) {
 async function getTenantByInstance(instance: string): Promise<string | null> {
   // In a real app, store instance→tenant mapping
   // For now, use env default or first active tenant
-  const { rows: [tenant] } = await query(
+  const { rows: [tenant] } = await query<{ id: string }>(
     `SELECT id FROM tenants WHERE plan_status = 'active' LIMIT 1`
   )
   return tenant?.id ?? null
 }
 
 async function getTenantContext(tenantId: string) {
-  const { rows: [tenant] } = await query(
+  const { rows: [tenant] } = await query<{ name: string; plan: string }>(
     'SELECT name, plan FROM tenants WHERE id = $1',
     [tenantId]
   )
 
-  const { rows: lowStock } = await query(
+  const { rows: lowStock } = await query<{ name: string; stock: number; min_stock: number }>(
     `SELECT name, stock, min_stock FROM products
      WHERE tenant_id = $1 AND (stock = 0 OR stock <= min_stock) AND min_stock > 0
      LIMIT 5`,
     [tenantId]
   )
 
-  const { rows: [salesSummary] } = await query(
+  const { rows: [salesSummary] } = await query<{ total: string; count: string }>(
     `SELECT COALESCE(SUM(total), 0) as total, COUNT(*) as count
      FROM sales WHERE tenant_id = $1 AND created_at >= NOW() - INTERVAL '30 days'
      AND payment_status = 'completed'`,
@@ -180,7 +183,7 @@ async function getTenantContext(tenantId: string) {
   return {
     tenantName: tenant?.name ?? 'Loja',
     plan: tenant?.plan ?? 'starter',
-    lowStockProducts: lowStock.map((p: any) => ({
+    lowStockProducts: lowStock.map((p) => ({
       name: p.name,
       stock: p.stock,
       minStock: p.min_stock,

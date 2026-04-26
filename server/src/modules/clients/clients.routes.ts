@@ -52,7 +52,7 @@ export async function clientsRoutes(fastify: FastifyInstance) {
       [request.params.id]
     )
 
-    return { ...rows[0], recentSales: sales }
+    return { ...rows[0]!, recentSales: sales }
   })
 
   fastify.post('/', async (request, reply) => {

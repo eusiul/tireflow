@@ -56,7 +56,7 @@ export async function salesRoutes(fastify: FastifyInstance) {
     )
 
     const { rows: [{ count }] } = await query(
-      `SELECT COUNT(*) FROM sales WHERE ${conditions.join(' AND ')}`,
+      `SELECT COUNT(*) FROM sales s WHERE ${conditions.join(' AND ')}`,
       params
     )
 

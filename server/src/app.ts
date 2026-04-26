@@ -94,7 +94,7 @@ export async function buildApp() {
         tenantName: tenant?.name ?? 'Loja',
         plan: tenant?.plan ?? 'starter',
         lowStockProducts: lowStock.map((p: any) => ({ name: p.name, stock: p.stock, minStock: p.min_stock })),
-        recentSalesSummary: { total: parseFloat(salesSummary.total), count: parseInt(salesSummary.count), period: '30 dias' },
+        recentSalesSummary: { total: parseFloat(salesSummary?.total ?? 0), count: parseInt(salesSummary?.count ?? 0), period: '30 dias' },
       }
     )
 

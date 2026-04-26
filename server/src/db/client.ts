@@ -12,7 +12,9 @@ export const pool = new Pool({
   max: 20,
   idleTimeoutMillis: 30_000,
   connectionTimeoutMillis: 5_000,
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+  ssl: process.env.DATABASE_URL?.includes('supabase.co') || process.env.NODE_ENV === 'production'
+    ? { rejectUnauthorized: false }
+    : false,
 })
 
 pool.on('error', (err) => {
@@ -20,7 +22,7 @@ pool.on('error', (err) => {
 })
 
 // Typed query helper
-export async function query<T = unknown>(
+export async function query<T extends Record<string, any> = Record<string, any>>(
   text: string,
   params?: unknown[]
 ): Promise<pg.QueryResult<T>> {

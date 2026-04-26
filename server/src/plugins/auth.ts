@@ -34,7 +34,7 @@ async function authPlugin(fastify: FastifyInstance) {
   // Decorate request with auth helpers
   fastify.decorateRequest('userId', '')
   fastify.decorateRequest('tenantId', '')
-  fastify.decorateRequest('userRole', '')
+  fastify.decorateRequest('userRole', '' as unknown as 'admin' | 'seller' | 'cashier')
 
   // Auth hook — validates JWT and sets request context
   fastify.decorate(
