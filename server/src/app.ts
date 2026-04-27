@@ -30,8 +30,21 @@ export async function buildApp() {
     contentSecurityPolicy: false,
   })
 
+  const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+    'https://tireflow.vercel.app',
+    ...(process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()).filter(Boolean) || []),
+  ]
+
   await fastify.register(cors, {
-    origin: process.env.CORS_ORIGIN?.split(',') || ['http://localhost:5173'],
+    origin: (origin, cb) => {
+      if (!origin || allowedOrigins.includes(origin) || origin.endsWith('.vercel.app')) {
+        cb(null, true)
+      } else {
+        cb(new Error('Not allowed by CORS'), false)
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
