@@ -7,6 +7,7 @@ RUN npm ci
 
 COPY tsconfig.json ./
 COPY src ./src
+COPY DATABASE_SCHEMA.sql ./DATABASE_SCHEMA.sql
 
 RUN npm run build
 
@@ -18,7 +19,8 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 
 COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/DATABASE_SCHEMA.sql ./DATABASE_SCHEMA.sql
 
 EXPOSE 3003
 
-CMD ["node", "dist/main.js"]
+CMD ["sh", "-c", "node dist/db/init.js && node dist/main.js"]
