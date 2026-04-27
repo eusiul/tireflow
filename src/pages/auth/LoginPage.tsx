@@ -33,11 +33,24 @@ export function LoginPage() {
       login(user, tenant, localStorage.getItem('tf_access_token') || '')
       navigate('/dashboard')
     } catch (err: unknown) {
-      const e = err as { message?: string }
-      setError(e?.message === 'Invalid credentials' ? 'E-mail ou senha incorretos.' : 'Erro ao conectar. Tente novamente.')
+      const e = err as { message?: string; status?: number }
+      if (e?.message === 'Invalid credentials') {
+        setError('E-mail ou senha incorretos.')
+      } else if (e?.status === 429) {
+        setError('Muitas tentativas. Aguarde 1 minuto e tente novamente.')
+      } else if (!navigator.onLine) {
+        setError('Sem conexão com a internet.')
+      } else {
+        setError(`Erro ao conectar com o servidor. ${e?.message ? `(${e.message})` : ''}`)
+      }
     } finally {
       setLoading(false)
     }
+  }
+
+  const fillDemoCredentials = () => {
+    setEmail('admin@tireflow.com')
+    setPassword('Admin123!')
   }
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -209,15 +222,20 @@ export function LoginPage() {
             </Button>
           </form>
 
-          <div className="mt-4 p-3 rounded-xl bg-brand-500/8 border border-brand-500/15">
-            <div className="flex items-center gap-2 mb-1">
-              <Zap size={13} className="text-brand-400" />
-              <span className="text-xs font-medium text-brand-300">Acesso real</span>
+          <button
+            type="button"
+            onClick={fillDemoCredentials}
+            className="mt-4 w-full p-3 rounded-xl bg-brand-500/8 border border-brand-500/15 hover:bg-brand-500/15 transition-colors text-left"
+          >
+            <div className="flex items-center justify-between mb-1">
+              <div className="flex items-center gap-2">
+                <Zap size={13} className="text-brand-400" />
+                <span className="text-xs font-medium text-brand-300">Acesso Admin — clique para preencher</span>
+              </div>
             </div>
-            <p className="text-xs text-zinc-500">
-              Use as credenciais da conta criada ou registre uma nova empresa.
-            </p>
-          </div>
+            <p className="text-xs text-zinc-400 font-mono">admin@tireflow.com</p>
+            <p className="text-xs text-zinc-400 font-mono">Admin123!</p>
+          </button>
 
           <p className="text-center text-xs text-zinc-600 mt-6">
             Não tem conta?{' '}
