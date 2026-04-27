@@ -23,4 +23,4 @@ COPY --from=builder /app/DATABASE_SCHEMA.sql ./DATABASE_SCHEMA.sql
 
 EXPOSE 3003
 
-CMD ["sh", "-c", "node dist/db/init.js && node dist/main.js"]
+CMD ["sh", "-c", "node dist/db/init.js || echo '⚠️ Init warning, continuing...' ; node dist/main.js"]
