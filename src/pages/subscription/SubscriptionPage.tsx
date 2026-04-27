@@ -54,7 +54,7 @@ const PLANS = [
     price: 497,
     description: 'Para redes e franquias',
     icon: <Building2 size={20} />,
-    color: 'from-violet-600 to-purple-700',
+    color: 'from-red-700 to-red-800',
     features: [
       'Usuários ilimitados',
       'Multiunidades',

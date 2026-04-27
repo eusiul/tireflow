@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown, ShoppingCart, Package, DollarSign, AlertTriangle, ArrowRight, Zap, RefreshCw } from 'lucide-react'
+import { TrendingUp, ShoppingCart, Package, DollarSign, AlertTriangle, ArrowRight, Zap, RefreshCw } from 'lucide-react'
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell,
 } from 'recharts'
 import { Link } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import { sales as salesApi, products as productsApi } from '@/lib/api'
 import { formatCurrency, formatRelativeTime } from '@/lib/formatters'
 import { Badge } from '@/components/ui/Badge'
@@ -14,27 +15,24 @@ import { Card } from '@/components/ui/Card'
 import type { Sale, Product } from '@/types'
 
 const CATEGORY_COLORS: Record<string, string> = {
-  tire: '#8b5cf6',
+  tire: '#ef4444',
   rim: '#3b82f6',
   service: '#10b981',
   accessory: '#f59e0b',
-}
-const CATEGORY_LABELS: Record<string, string> = {
-  tire: 'Pneus', rim: 'Rodas', service: 'Serviços', accessory: 'Acessórios',
 }
 
 const containerVariants = { hidden: {}, show: { transition: { staggerChildren: 0.07 } } }
 const itemVariants = { hidden: { opacity: 0, y: 12 }, show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] } } }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload, label, revenueLabel }: any) => {
   if (!active || !payload?.length) return null
   return (
     <div className="bg-surface-700 border border-surface-600 rounded-xl px-3 py-2 shadow-card-hover">
       <p className="text-xs text-zinc-500 mb-1">{label}</p>
-      {payload.map((p: { name: string; color: string; value: number }) => (
-        <p key={p.name} className="text-sm font-medium" style={{ color: p.color }}>
-          Receita: {formatCurrency(p.value)}
+      {payload.map((p: { color: string; value: number }) => (
+        <p key={p.color} className="text-sm font-medium" style={{ color: p.color }}>
+          {revenueLabel}: {formatCurrency(p.value)}
         </p>
       ))}
     </div>
@@ -42,10 +40,18 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 }
 
 export function DashboardPage() {
+  const { t } = useTranslation()
   const [summary, setSummary] = useState<{ revenue: number; sales_count: number; avg_ticket: number } | null>(null)
   const [recentSales, setRecentSales] = useState<Sale[]>([])
   const [lowStockProducts, setLowStockProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+
+  const CATEGORY_LABELS: Record<string, string> = {
+    tire: t('nav.inventory'),
+    rim: 'Rodas',
+    service: t('nav.services'),
+    accessory: 'Accesorios',
+  }
 
   const fetchData = async () => {
     setLoading(true)
@@ -68,13 +74,12 @@ export function DashboardPage() {
   useEffect(() => { fetchData() }, [])
 
   const kpis = summary ? [
-    { label: 'Receita (30 dias)', value: summary.revenue, format: 'currency' as const, icon: DollarSign, change: null },
-    { label: 'Vendas (30 dias)', value: summary.sales_count, format: 'number' as const, icon: ShoppingCart, change: null },
-    { label: 'Ticket médio', value: summary.avg_ticket, format: 'currency' as const, icon: TrendingUp, change: null },
-    { label: 'Baixo estoque', value: lowStockProducts.length, format: 'number' as const, icon: Package, change: null },
+    { label: t('dashboard.kpi.revenue'), value: summary.revenue, format: 'currency' as const, icon: DollarSign },
+    { label: t('dashboard.kpi.sales'), value: summary.sales_count, format: 'number' as const, icon: ShoppingCart },
+    { label: t('dashboard.kpi.avgTicket'), value: summary.avg_ticket, format: 'currency' as const, icon: TrendingUp },
+    { label: t('dashboard.kpi.lowStock'), value: lowStockProducts.length, format: 'number' as const, icon: Package },
   ] : []
 
-  // Category breakdown from recent sales
   const categoryMap: Record<string, number> = {}
   lowStockProducts.forEach((p) => {
     categoryMap[p.category] = (categoryMap[p.category] || 0) + 1
@@ -87,21 +92,22 @@ export function DashboardPage() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
         className="flex items-center justify-between mb-6"
       >
         <div>
-          <h1 className="text-xl font-bold text-zinc-100">Dashboard</h1>
-          <p className="text-sm text-zinc-500 mt-0.5">Visão geral do negócio</p>
+          <h1 className="text-xl font-bold text-zinc-100">{t('dashboard.title')}</h1>
+          <p className="text-sm text-zinc-500 mt-0.5">{t('dashboard.subtitle')}</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="ghost" size="sm" icon={<RefreshCw size={14} />} onClick={fetchData}>Atualizar</Button>
+          <Button variant="ghost" size="sm" icon={<RefreshCw size={14} />} onClick={fetchData}>
+            {t('dashboard.refresh')}
+          </Button>
           <Link to="/pos">
             <Button variant="primary" size="sm" icon={<Zap size={14} />}>
-              Nova Venda
+              {t('dashboard.newSale')}
             </Button>
           </Link>
         </div>
@@ -110,9 +116,7 @@ export function DashboardPage() {
       {/* KPIs */}
       {loading ? (
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="surface-card h-24 animate-pulse" />
-          ))}
+          {[0, 1, 2, 3].map((i) => <div key={i} className="surface-card h-24 animate-pulse" />)}
         </div>
       ) : (
         <motion.div
@@ -135,7 +139,7 @@ export function DashboardPage() {
                   </div>
                   <div className="mb-1">
                     <p className="text-2xl font-bold text-zinc-100 tabular">
-                      {kpi.format === 'currency' ? formatCurrency(kpi.value) : kpi.value.toLocaleString('pt-BR')}
+                      {kpi.format === 'currency' ? formatCurrency(kpi.value) : kpi.value.toLocaleString()}
                     </p>
                   </div>
                   <p className="text-xs text-zinc-500">{kpi.label}</p>
@@ -157,9 +161,9 @@ export function DashboardPage() {
         >
           <Card padding="none">
             <div className="flex items-center justify-between p-4 border-b border-surface-700">
-              <h3 className="text-sm font-semibold text-zinc-100">Vendas Recentes</h3>
+              <h3 className="text-sm font-semibold text-zinc-100">{t('dashboard.recentSales')}</h3>
               <Link to="/pos">
-                <Button variant="ghost" size="xs" iconRight={<ArrowRight size={12} />}>Ver todas</Button>
+                <Button variant="ghost" size="xs" iconRight={<ArrowRight size={12} />}>{t('dashboard.viewAll')}</Button>
               </Link>
             </div>
             {loading ? (
@@ -169,9 +173,9 @@ export function DashboardPage() {
             ) : recentSales.length === 0 ? (
               <div className="py-8 text-center">
                 <ShoppingCart size={24} className="text-zinc-700 mx-auto mb-2" />
-                <p className="text-xs text-zinc-500">Nenhuma venda ainda</p>
+                <p className="text-xs text-zinc-500">{t('dashboard.noSales')}</p>
                 <Link to="/pos">
-                  <Button variant="outline" size="sm" className="mt-2">Fazer primeira venda</Button>
+                  <Button variant="outline" size="sm" className="mt-2">{t('dashboard.firstSale')}</Button>
                 </Link>
               </div>
             ) : (
@@ -183,7 +187,7 @@ export function DashboardPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-zinc-200 truncate">
-                        {sale.clientName || 'Cliente avulso'}
+                        {sale.clientName || t('dashboard.walkIn')}
                       </p>
                       <p className="text-xs text-zinc-500">
                         {Array.isArray(sale.items) ? sale.items.length : 0} item{Array.isArray(sale.items) && sale.items.length !== 1 ? 's' : ''} · {formatRelativeTime(sale.createdAt)}
@@ -211,13 +215,13 @@ export function DashboardPage() {
           <Card padding="none" className="h-full">
             <div className="flex items-center justify-between p-4 border-b border-surface-700">
               <div className="flex items-center gap-2">
-                <h3 className="text-sm font-semibold text-zinc-100">Estoque Baixo</h3>
+                <h3 className="text-sm font-semibold text-zinc-100">{t('dashboard.lowStock')}</h3>
                 {lowStockProducts.length > 0 && (
                   <Badge variant="danger" size="sm">{lowStockProducts.length}</Badge>
                 )}
               </div>
               <Link to="/inventory">
-                <Button variant="ghost" size="xs" iconRight={<ArrowRight size={12} />}>Estoque</Button>
+                <Button variant="ghost" size="xs" iconRight={<ArrowRight size={12} />}>{t('dashboard.stockLink')}</Button>
               </Link>
             </div>
             {loading ? (
@@ -227,7 +231,7 @@ export function DashboardPage() {
             ) : lowStockProducts.length === 0 ? (
               <div className="py-8 text-center">
                 <Package size={24} className="text-zinc-700 mx-auto mb-2" />
-                <p className="text-xs text-zinc-500">Estoque em dia</p>
+                <p className="text-xs text-zinc-500">{t('dashboard.stockOk')}</p>
               </div>
             ) : (
               <div className="divide-y divide-surface-700">
@@ -242,17 +246,15 @@ export function DashboardPage() {
                       <p className="text-xs text-zinc-500 mt-0.5">{p.brand} · {p.size}</p>
                     </div>
                     <Badge variant={p.stock === 0 ? 'danger' : 'warning'} size="sm">
-                      {p.stock === 0 ? 'Zerado' : `${p.stock} un`}
+                      {p.stock === 0 ? 'Zero' : `${p.stock} un`}
                     </Badge>
                   </div>
                 ))}
               </div>
             )}
 
-            {/* Mini chart if data */}
             {categoryData.length > 0 && (
               <div className="p-4 border-t border-surface-700">
-                <p className="text-xs text-zinc-500 mb-3 font-medium">Por categoria</p>
                 <div className="flex items-center gap-4">
                   <ResponsiveContainer width={80} height={80}>
                     <PieChart>
@@ -279,7 +281,6 @@ export function DashboardPage() {
         </motion.div>
       </div>
 
-      {/* Revenue chart placeholder — shows real data when sales exist */}
       {!loading && recentSales.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 12 }}
@@ -290,8 +291,8 @@ export function DashboardPage() {
           <Card>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-sm font-semibold text-zinc-100">Receita Recente</h3>
-                <p className="text-xs text-zinc-500">Últimas {recentSales.length} vendas</p>
+                <h3 className="text-sm font-semibold text-zinc-100">{t('dashboard.recentRevenue')}</h3>
+                <p className="text-xs text-zinc-500">{t('dashboard.lastSales', { count: recentSales.length })}</p>
               </div>
             </div>
             <div className="h-44">
@@ -302,15 +303,15 @@ export function DashboardPage() {
                 >
                   <defs>
                     <linearGradient id="rev-gradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#ef4444" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#ef4444" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
                   <XAxis dataKey="i" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} />
                   <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#71717a' }} tickFormatter={(v) => `${(v / 1000).toFixed(0)}k`} />
-                  <Tooltip content={<CustomTooltip />} />
-                  <Area type="monotone" dataKey="revenue" stroke="#8b5cf6" strokeWidth={2} fill="url(#rev-gradient)" dot={false} activeDot={{ r: 4, fill: '#8b5cf6', strokeWidth: 0 }} />
+                  <Tooltip content={<CustomTooltip revenueLabel={t('dashboard.kpi.revenue')} />} />
+                  <Area type="monotone" dataKey="revenue" stroke="#ef4444" strokeWidth={2} fill="url(#rev-gradient)" dot={false} activeDot={{ r: 4, fill: '#ef4444', strokeWidth: 0 }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>

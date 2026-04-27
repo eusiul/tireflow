@@ -7,17 +7,17 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          50: '#f5f3ff',
-          100: '#ede9fe',
-          200: '#ddd6fe',
-          300: '#c4b5fd',
-          400: '#a78bfa',
-          500: '#8b5cf6',
-          600: '#7c3aed',
-          700: '#6d28d9',
-          800: '#5b21b6',
-          900: '#4c1d95',
-          950: '#2e1065',
+          50: '#fff1f2',
+          100: '#ffe4e6',
+          200: '#fecdd3',
+          300: '#fca5a5',
+          400: '#f87171',
+          500: '#ef4444',
+          600: '#dc2626',
+          700: '#b91c1c',
+          800: '#991b1b',
+          900: '#7f1d1d',
+          950: '#450a0a',
         },
         surface: {
           950: '#09090b',
@@ -51,8 +51,8 @@ const config: Config = {
         '2xl': '1.25rem',
       },
       boxShadow: {
-        glow: '0 0 24px -6px rgb(139 92 246 / 0.5)',
-        'glow-sm': '0 0 12px -4px rgb(139 92 246 / 0.4)',
+        glow: '0 0 24px -6px rgb(239 68 68 / 0.5)',
+        'glow-sm': '0 0 12px -4px rgb(239 68 68 / 0.4)',
         card: '0 1px 2px 0 rgb(0 0 0 / 0.5)',
         'card-hover': '0 4px 16px 0 rgb(0 0 0 / 0.4)',
         modal: '0 24px 80px -12px rgb(0 0 0 / 0.8)',
@@ -72,7 +72,7 @@ const config: Config = {
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'brand-gradient': 'linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%)',
+        'brand-gradient': 'linear-gradient(135deg, #ef4444 0%, #b91c1c 100%)',
         'surface-gradient': 'linear-gradient(180deg, #111113 0%, #09090b 100%)',
       },
     },

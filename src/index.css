@@ -54,7 +54,7 @@
 
   /* Focus ring */
   *:focus-visible {
-    outline: 2px solid #8b5cf6;
+    outline: 2px solid #ef4444;
     outline-offset: 2px;
     border-radius: 4px;
   }
@@ -122,7 +122,7 @@
 
   /* Gradient text */
   .gradient-text {
-    background: linear-gradient(135deg, #c4b5fd 0%, #8b5cf6 50%, #6d28d9 100%);
+    background: linear-gradient(135deg, #fca5a5 0%, #ef4444 50%, #b91c1c 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

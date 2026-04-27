@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "sales": "Vendas / POS",
+    "inventory": "Inventário",
+    "clients": "Clientes",
+    "services": "Serviços",
+    "reports": "Relatórios",
+    "plan": "Plano",
+    "settings": "Configurações",
+    "signOut": "Sair",
+    "collapse": "Recolher",
+    "tireSystem": "Sistema de Pneus"
+  },
+  "topbar": {
+    "searchPlaceholder": "Buscar ou executar...",
+    "changeLanguage": "Trocar idioma",
+    "notifications": "Notificações",
+    "noNotifications": "Nenhuma notificação pendente",
+    "markAllRead": "Marcar todas como lidas",
+    "allRead": "Tudo em dia!",
+    "allReadDesc": "Nenhum alerta no momento."
+  },
+  "services": {
+    "title": "Serviços",
+    "subtitle": "Ordens de serviço do dia",
+    "newOS": "Nova OS",
+    "editOS": "Editar OS",
+    "deleteOS": "Excluir OS",
+    "client": "Cliente",
+    "plate": "Placa",
+    "vehicle": "Veículo",
+    "servicesLabel": "Serviços",
+    "status": "Status",
+    "total": "Total",
+    "operator": "Operador",
+    "done": "Concluído",
+    "inProgress": "Em execução",
+    "pending": "Aguardando",
+    "noOS": "Nenhuma ordem de serviço",
+    "noOSDesc": "Clique em \"Nova OS\" para criar a primeira.",
+    "deleteConfirm": "Excluir esta OS?",
+    "deleteMessage": "Esta ação não pode ser desfeita.",
+    "form": {
+      "client": "Nome do cliente",
+      "plate": "Placa do veículo",
+      "vehicle": "Veículo (ex: Honda Civic 2020)",
+      "services": "Serviços (um por linha)",
+      "total": "Total (R$)",
+      "operator": "Operador",
+      "status": "Status"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Visão geral do negócio",
+    "refresh": "Atualizar",
+    "newSale": "Nova Venda",
+    "recentSales": "Vendas Recentes",
+    "viewAll": "Ver todas",
+    "lowStock": "Estoque Baixo",
+    "stockLink": "Estoque",
+    "noSales": "Nenhuma venda ainda",
+    "firstSale": "Fazer primeira venda",
+    "stockOk": "Estoque em dia",
+    "recentRevenue": "Receita Recente",
+    "lastSales": "Últimas {{count}} vendas",
+    "walkIn": "Cliente avulso",
+    "revenue": "Receita: {{value}}",
+    "items": "{{count}} item",
+    "items_plural": "{{count}} itens",
+    "kpi": {
+      "revenue": "Receita (30 dias)",
+      "sales": "Vendas (30 dias)",
+      "avgTicket": "Ticket médio",
+      "lowStock": "Baixo estoque"
+    }
+  },
+  "settings": {
+    "title": "Configurações",
+    "subtitle": "Gerencie sua conta e preferências",
+    "tabs": {
+      "company": "Empresa",
+      "appearance": "Aparência",
+      "users": "Usuários",
+      "security": "Segurança"
+    },
+    "company": {
+      "title": "Dados da empresa",
+      "name": "Nome da empresa",
+      "cnpj": "CNPJ",
+      "phone": "Telefone",
+      "email": "E-mail",
+      "address": "Endereço",
+      "logo": "Logo da empresa",
+      "logoHint": "Clique para enviar ou arraste a imagem",
+      "logoFormat": "PNG, JPG até 2MB",
+      "save": "Salvar alterações",
+      "saved": "Configurações salvas!",
+      "savedMessage": "As alterações foram aplicadas."
+    },
+    "appearance": {
+      "title": "Aparência",
+      "language": "Idioma"
+    },
+    "users": {
+      "title": "Usuários",
+      "invite": "Convidar usuário",
+      "role": "Função"
+    },
+    "security": {
+      "title": "Segurança",
+      "currentPass": "Senha atual",
+      "newPass": "Nova senha",
+      "confirmPass": "Confirmar senha",
+      "twoFactor": "Autenticação em dois fatores",
+      "twoFactorDesc": "Recomendado para maior segurança",
+      "enable": "Ativar",
+      "changePass": "Alterar senha"
+    }
+  },
+  "common": {
+    "save": "Salvar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "delete": "Excluir",
+    "close": "Fechar",
+    "confirm": "Confirmar",
+    "loading": "Carregando...",
+    "plan": "Plano {{plan}}"
+  }
+}

@@ -1,0 +1,132 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "sales": "Sales / POS",
+    "inventory": "Inventory",
+    "clients": "Clients",
+    "services": "Services",
+    "reports": "Reports",
+    "plan": "Plan",
+    "settings": "Settings",
+    "signOut": "Sign out",
+    "collapse": "Collapse",
+    "tireSystem": "Tire System"
+  },
+  "topbar": {
+    "searchPlaceholder": "Search or run...",
+    "changeLanguage": "Change language",
+    "notifications": "Notifications",
+    "noNotifications": "No pending notifications",
+    "markAllRead": "Mark all as read",
+    "allRead": "All caught up!",
+    "allReadDesc": "No alerts at the moment."
+  },
+  "services": {
+    "title": "Services",
+    "subtitle": "Today's service orders",
+    "newOS": "New Order",
+    "editOS": "Edit Order",
+    "deleteOS": "Delete Order",
+    "client": "Client",
+    "plate": "Plate",
+    "vehicle": "Vehicle",
+    "servicesLabel": "Services",
+    "status": "Status",
+    "total": "Total",
+    "operator": "Operator",
+    "done": "Done",
+    "inProgress": "In progress",
+    "pending": "Pending",
+    "noOS": "No service orders",
+    "noOSDesc": "Click \"New Order\" to create the first one.",
+    "deleteConfirm": "Delete this order?",
+    "deleteMessage": "This action cannot be undone.",
+    "form": {
+      "client": "Client name",
+      "plate": "Vehicle plate",
+      "vehicle": "Vehicle (e.g. Honda Civic 2020)",
+      "services": "Services (one per line)",
+      "total": "Total ($)",
+      "operator": "Operator",
+      "status": "Status"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Business overview",
+    "refresh": "Refresh",
+    "newSale": "New Sale",
+    "recentSales": "Recent Sales",
+    "viewAll": "View all",
+    "lowStock": "Low Stock",
+    "stockLink": "Inventory",
+    "noSales": "No sales yet",
+    "firstSale": "Make first sale",
+    "stockOk": "Stock is fine",
+    "recentRevenue": "Recent Revenue",
+    "lastSales": "Last {{count}} sales",
+    "walkIn": "Walk-in customer",
+    "revenue": "Revenue: {{value}}",
+    "items": "{{count}} item",
+    "items_plural": "{{count}} items",
+    "kpi": {
+      "revenue": "Revenue (30 days)",
+      "sales": "Sales (30 days)",
+      "avgTicket": "Avg. ticket",
+      "lowStock": "Low stock"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
+    "tabs": {
+      "company": "Company",
+      "appearance": "Appearance",
+      "users": "Users",
+      "security": "Security"
+    },
+    "company": {
+      "title": "Company data",
+      "name": "Company name",
+      "cnpj": "Tax ID",
+      "phone": "Phone",
+      "email": "Email",
+      "address": "Address",
+      "logo": "Company logo",
+      "logoHint": "Click to upload or drag the image",
+      "logoFormat": "PNG, JPG up to 2MB",
+      "save": "Save changes",
+      "saved": "Settings saved!",
+      "savedMessage": "Changes have been applied."
+    },
+    "appearance": {
+      "title": "Appearance",
+      "language": "Language"
+    },
+    "users": {
+      "title": "Users",
+      "invite": "Invite user",
+      "role": "Role"
+    },
+    "security": {
+      "title": "Security",
+      "currentPass": "Current password",
+      "newPass": "New password",
+      "confirmPass": "Confirm password",
+      "twoFactor": "Two-factor authentication",
+      "twoFactorDesc": "Recommended for enhanced security",
+      "enable": "Enable",
+      "changePass": "Change password"
+    }
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "close": "Close",
+    "confirm": "Confirm",
+    "loading": "Loading...",
+    "plan": "Plan {{plan}}"
+  }
+}

@@ -188,8 +188,8 @@ export const REVENUE_CHART_DATA = [
 ]
 
 export const CATEGORY_DATA = [
-  { name: 'Pneus', value: 68, color: '#8b5cf6' },
-  { name: 'Serviços', value: 22, color: '#6d28d9' },
-  { name: 'Acessórios', value: 7, color: '#a78bfa' },
-  { name: 'Rodas', value: 3, color: '#c4b5fd' },
+  { name: 'Pneus', value: 68, color: '#ef4444' },
+  { name: 'Serviços', value: 22, color: '#b91c1c' },
+  { name: 'Acessórios', value: 7, color: '#f87171' },
+  { name: 'Rodas', value: 3, color: '#fca5a5' },
 ]

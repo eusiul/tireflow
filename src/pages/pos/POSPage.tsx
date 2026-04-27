@@ -2,20 +2,20 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, Plus, Minus, Trash2, ShoppingCart, User, Zap,
-  CreditCard, Banknote, Smartphone, CheckCircle, X, Package
+  CreditCard, Banknote, Smartphone, CheckCircle, X, Package, UserX
 } from 'lucide-react'
 import { useCartStore } from '@/store/useCartStore'
 import { useUIStore } from '@/store/useUIStore'
 import { useAuthStore } from '@/store/useAuthStore'
 import { useBarcodeScan } from '@/hooks/useBarcodeScan'
-import { products as productsApi, sales as salesApi } from '@/lib/api'
+import { products as productsApi, sales as salesApi, clients as clientsApi } from '@/lib/api'
 import { formatCurrency } from '@/lib/formatters'
 import { Button } from '@/components/ui/Button'
 import { Input } from '@/components/ui/Input'
 import { Badge } from '@/components/ui/Badge'
 import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/cn'
-import type { Product } from '@/types'
+import type { Product, Client } from '@/types'
 
 const CATEGORY_LABELS: Record<string, string> = {
   tire: 'Pneu', rim: 'Roda', service: 'Serviço', accessory: 'Acessório',
@@ -88,10 +88,43 @@ export function POSPage() {
   const [paid, setPaid] = useState(false)
   const [saleLoading, setSaleLoading] = useState(false)
   const [amountReceived, setAmountReceived] = useState('')
+  const [clientSelectorOpen, setClientSelectorOpen] = useState(false)
+  const [clientSearch, setClientSearch] = useState('')
+  const [allClients, setAllClients] = useState<Client[]>([])
+  const [clientsLoading, setClientsLoading] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   const { addToast } = useUIStore()
   const { user } = useAuthStore()
   const cart = useCartStore()
+
+  const openClientSelector = async () => {
+    setClientSearch('')
+    setClientSelectorOpen(true)
+    setClientsLoading(true)
+    try {
+      const res = await clientsApi.list()
+      setAllClients(res.clients)
+    } catch {
+      addToast({ type: 'error', title: 'Erro ao carregar clientes' })
+    } finally {
+      setClientsLoading(false)
+    }
+  }
+
+  const selectClient = (client: Client) => {
+    cart.setClient(client)
+    setClientSelectorOpen(false)
+  }
+
+  const filteredClients = allClients.filter((c) => {
+    const q = clientSearch.toLowerCase()
+    return (
+      c.name.toLowerCase().includes(q) ||
+      (c.phone || '').includes(q) ||
+      (c.document || '').includes(q) ||
+      (c.vehiclePlates || []).some((p) => p.toLowerCase().includes(q))
+    )
+  })
 
   useEffect(() => {
     productsApi.list({ limit: '200' }).then((res) => {
@@ -227,12 +260,40 @@ export function POSPage() {
 
         {/* Client selector */}
         <div className="px-4 py-2 border-b border-surface-700">
-          <button className="flex items-center gap-2 w-full p-2 rounded-lg bg-surface-800 border border-surface-700 hover:border-surface-600 transition-all text-left">
-            <User size={14} className="text-zinc-500 shrink-0" />
-            <span className="text-sm text-zinc-500">
-              {cart.client ? cart.client.name : 'Selecionar cliente (opcional)'}
-            </span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            <button
+              onClick={openClientSelector}
+              className={cn(
+                'flex items-center gap-2 flex-1 p-2 rounded-lg border transition-all text-left',
+                cart.client
+                  ? 'bg-brand-500/8 border-brand-500/25 hover:border-brand-500/40'
+                  : 'bg-surface-800 border-surface-700 hover:border-surface-600'
+              )}
+            >
+              <User size={14} className={cart.client ? 'text-brand-400 shrink-0' : 'text-zinc-500 shrink-0'} />
+              <div className="flex-1 min-w-0">
+                {cart.client ? (
+                  <>
+                    <p className="text-xs font-medium text-brand-300 truncate">{cart.client.name}</p>
+                    {cart.client.vehiclePlates?.[0] && (
+                      <p className="text-[10px] text-zinc-500">{cart.client.vehiclePlates[0]}</p>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-zinc-500">Selecionar cliente (opcional)</span>
+                )}
+              </div>
+            </button>
+            {cart.client && (
+              <button
+                onClick={() => cart.setClient(null)}
+                className="p-2 rounded-lg hover:bg-surface-700 text-zinc-500 hover:text-zinc-300 transition-colors shrink-0"
+                title="Remover cliente"
+              >
+                <UserX size={14} />
+              </button>
+            )}
+          </div>
         </div>
 
         {/* Cart items */}
@@ -322,6 +383,70 @@ export function POSPage() {
           </Button>
         </div>
       </div>
+
+      {/* Client Selector Modal */}
+      <Modal
+        open={clientSelectorOpen}
+        onClose={() => setClientSelectorOpen(false)}
+        title="Selecionar Cliente"
+        subtitle="Busque por nome, placa, telefone ou CPF"
+        size="md"
+      >
+        <div className="space-y-3">
+          <Input
+            value={clientSearch}
+            onChange={(e) => setClientSearch(e.target.value)}
+            placeholder="João Silva, ABC-1234, 11987..."
+            icon={<Search size={14} />}
+            autoFocus
+          />
+          <div className="max-h-72 overflow-y-auto -mx-1 space-y-1">
+            {clientsLoading ? (
+              <div className="flex items-center justify-center py-8">
+                <div className="w-5 h-5 rounded-full border-2 border-brand-500 border-t-transparent animate-spin" />
+              </div>
+            ) : filteredClients.length === 0 ? (
+              <div className="flex flex-col items-center gap-2 py-8 text-center">
+                <User size={24} className="text-zinc-700" />
+                <p className="text-sm text-zinc-500">
+                  {clientSearch ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}
+                </p>
+              </div>
+            ) : (
+              filteredClients.map((client) => (
+                <button
+                  key={client.id}
+                  onClick={() => selectClient(client)}
+                  className={cn(
+                    'flex items-center gap-3 w-full px-3 py-2.5 rounded-xl border text-left transition-all',
+                    cart.client?.id === client.id
+                      ? 'bg-brand-500/10 border-brand-500/30'
+                      : 'bg-surface-700 border-surface-600 hover:bg-surface-600 hover:border-surface-500'
+                  )}
+                >
+                  <div className="w-8 h-8 rounded-full bg-brand-gradient flex items-center justify-center text-white text-xs font-bold shrink-0">
+                    {client.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-100 truncate">{client.name}</p>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      {client.phone && <span className="text-xs text-zinc-500">{client.phone}</span>}
+                      {client.vehiclePlates?.length > 0 && (
+                        <span className="text-xs font-mono bg-surface-600 px-1.5 py-0.5 rounded text-zinc-400">
+                          {client.vehiclePlates[0]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  {cart.client?.id === client.id && (
+                    <CheckCircle size={15} className="text-brand-400 shrink-0" />
+                  )}
+                </button>
+              ))
+            )}
+          </div>
+        </div>
+      </Modal>
 
       {/* Payment Modal */}
       <Modal

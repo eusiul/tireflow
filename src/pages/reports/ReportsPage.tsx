@@ -75,7 +75,7 @@ export function ReportsPage() {
                   />
                   <Bar dataKey="revenue" radius={[6, 6, 0, 0]}>
                     {REVENUE_CHART_DATA.map((_, i) => (
-                      <Cell key={i} fill={i === REVENUE_CHART_DATA.length - 1 ? '#8b5cf6' : '#3f3f46'} />
+                      <Cell key={i} fill={i === REVENUE_CHART_DATA.length - 1 ? '#ef4444' : '#3f3f46'} />
                     ))}
                   </Bar>
                 </BarChart>
@@ -143,10 +143,10 @@ export function ReportsPage() {
             <CardHeader title="Formas de Pagamento" subtitle="Distribuição do mês" icon={<DollarSign size={15} />} />
             <div className="space-y-3">
               {[
-                { method: 'Pix', pct: 52, amount: 22282, color: '#8b5cf6' },
-                { method: 'Cartão', pct: 31, amount: 13283, color: '#6d28d9' },
-                { method: 'Dinheiro', pct: 12, amount: 5142, color: '#a78bfa' },
-                { method: 'Transferência', pct: 5, amount: 2143, color: '#c4b5fd' },
+                { method: 'Pix', pct: 52, amount: 22282, color: '#ef4444' },
+                { method: 'Cartão', pct: 31, amount: 13283, color: '#b91c1c' },
+                { method: 'Dinheiro', pct: 12, amount: 5142, color: '#f87171' },
+                { method: 'Transferência', pct: 5, amount: 2143, color: '#fca5a5' },
               ].map((m) => (
                 <div key={m.method} className="flex items-center gap-3">
                   <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ background: m.color }} />

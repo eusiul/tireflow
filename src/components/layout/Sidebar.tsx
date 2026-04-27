@@ -5,28 +5,30 @@ import {
   ChevronLeft, Zap, BarChart2, Wrench, CreditCard, LogOut,
   Layers
 } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 import { useUIStore } from '@/store/useUIStore'
 import { useAuthStore } from '@/store/useAuthStore'
 import { cn } from '@/lib/cn'
 
-const NAV_ITEMS = [
-  { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard', shortcut: 'G D' },
-  { to: '/pos', icon: ShoppingCart, label: 'Vendas / POS', shortcut: 'G V' },
-  { to: '/inventory', icon: Package, label: 'Inventário', shortcut: 'G I' },
-  { to: '/clients', icon: Users, label: 'Clientes', shortcut: 'G C' },
-  { to: '/services', icon: Wrench, label: 'Serviços', shortcut: 'G S' },
-  { to: '/reports', icon: BarChart2, label: 'Relatórios', shortcut: 'G R' },
-]
-
-const BOTTOM_ITEMS = [
-  { to: '/subscription', icon: CreditCard, label: 'Plano' },
-  { to: '/settings', icon: Settings, label: 'Configurações' },
-]
-
 export function Sidebar() {
+  const { t } = useTranslation()
   const { sidebarCollapsed, toggleSidebar } = useUIStore()
   const { tenant, logout } = useAuthStore()
   const location = useLocation()
+
+  const NAV_ITEMS = [
+    { to: '/dashboard', icon: LayoutDashboard, label: t('nav.dashboard') },
+    { to: '/pos', icon: ShoppingCart, label: t('nav.sales') },
+    { to: '/inventory', icon: Package, label: t('nav.inventory') },
+    { to: '/clients', icon: Users, label: t('nav.clients') },
+    { to: '/services', icon: Wrench, label: t('nav.services') },
+    { to: '/reports', icon: BarChart2, label: t('nav.reports') },
+  ]
+
+  const BOTTOM_ITEMS = [
+    { to: '/subscription', icon: CreditCard, label: t('nav.plan') },
+    { to: '/settings', icon: Settings, label: t('nav.settings') },
+  ]
 
   return (
     <motion.aside
@@ -50,7 +52,7 @@ export function Sidebar() {
               {tenant?.name || 'TireFlow'}
             </span>
             <span className="block text-[10px] text-zinc-500 whitespace-nowrap -mt-0.5">
-              Sistema de Pneus
+              {t('nav.tireSystem')}
             </span>
           </motion.div>
         </div>
@@ -86,7 +88,6 @@ export function Sidebar() {
                   className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-4 bg-brand-500 rounded-r-full"
                 />
               )}
-              {/* Tooltip when collapsed */}
               {sidebarCollapsed && (
                 <div className="absolute left-full ml-2 px-2 py-1 bg-surface-700 border border-surface-600 rounded-lg text-xs text-zinc-200 whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity shadow-card-hover z-50">
                   {label}
@@ -137,7 +138,7 @@ export function Sidebar() {
             animate={{ opacity: sidebarCollapsed ? 0 : 1 }}
             transition={{ duration: 0.1 }}
           >
-            Sair
+            {t('nav.signOut')}
           </motion.span>
         </button>
 
@@ -156,7 +157,7 @@ export function Sidebar() {
             animate={{ opacity: sidebarCollapsed ? 0 : 1 }}
             transition={{ duration: 0.1 }}
           >
-            Recolher
+            {t('nav.collapse')}
           </motion.span>
         </button>
       </div>
@@ -167,7 +168,7 @@ export function Sidebar() {
           <div className="flex items-center gap-1.5 bg-brand-500/10 border border-brand-500/20 rounded-lg px-2.5 py-1.5">
             <Zap size={11} className="text-brand-400 shrink-0" />
             <span className="text-[10px] font-medium text-brand-300 capitalize">
-              Plano {tenant.plan}
+              {t('common.plan', { plan: tenant.plan })}
             </span>
           </div>
         </div>

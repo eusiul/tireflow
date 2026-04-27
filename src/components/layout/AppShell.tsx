@@ -3,7 +3,6 @@ import { useAuthStore } from '@/store/useAuthStore'
 import { Sidebar } from './Sidebar'
 import { TopBar } from './TopBar'
 import { CommandPalette } from '@/components/command/CommandPalette'
-import { AIAssistant } from '@/components/ai/AIAssistant'
 import { ToastContainer } from '@/components/ui/Toast'
 
 export function AppShell() {
@@ -23,7 +22,6 @@ export function AppShell() {
         </main>
       </div>
       <CommandPalette />
-      <AIAssistant />
       <ToastContainer />
     </div>
   )
