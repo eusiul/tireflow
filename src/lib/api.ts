@@ -311,6 +311,30 @@ export const whatsappApi = {
     apiFetch('/whatsapp/notify/service-ready', { method: 'POST', body: JSON.stringify({ serviceOrderId }) }),
 }
 
+// ─── Settings ─────────────────────────────────────────────────────────────────
+
+export const settings = {
+  getTenant: () => apiFetch<Record<string, unknown>>('/settings/tenant'),
+
+  updateTenant: (data: { name: string; cnpj?: string | null; phone?: string | null; address?: string | null; email?: string | null }) =>
+    apiFetch<Record<string, unknown>>('/settings/tenant', { method: 'PATCH', body: JSON.stringify(data) }),
+
+  uploadLogo: (logoBase64: string) =>
+    apiFetch<{ logoUrl: string }>('/settings/logo', { method: 'POST', body: JSON.stringify({ logoBase64 }) }),
+
+  deleteLogo: () =>
+    apiFetch<{ logoUrl: null }>('/settings/logo', { method: 'DELETE' }),
+
+  changePassword: (currentPassword: string, newPassword: string) =>
+    apiFetch<{ message: string }>('/settings/password', { method: 'PATCH', body: JSON.stringify({ currentPassword, newPassword }) }),
+
+  listUsers: () =>
+    apiFetch<{ users: Array<{ id: string; name: string; email: string; role: string; is_active: boolean; last_login_at: string | null }> }>('/settings/users'),
+
+  updateUser: (data: { name: string }) =>
+    apiFetch<{ id: string; name: string; email: string; role: string }>('/settings/user', { method: 'PATCH', body: JSON.stringify(data) }),
+}
+
 // ─── AI Chat ──────────────────────────────────────────────────────────────────
 
 export const ai = {

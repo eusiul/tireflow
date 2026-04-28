@@ -12,6 +12,7 @@ import { clientsRoutes } from './modules/clients/clients.routes.js'
 import { paymentsRoutes } from './modules/payments/payments.routes.js'
 import { nfeRoutes } from './modules/nfe/nfe.routes.js'
 import { whatsappRoutes } from './modules/whatsapp/whatsapp.routes.js'
+import { settingsRoutes } from './modules/settings/settings.routes.js'
 
 export async function buildApp() {
   const fastify = Fastify({
@@ -76,6 +77,7 @@ export async function buildApp() {
   await fastify.register(paymentsRoutes, { prefix: '/api/v1/payments' })
   await fastify.register(nfeRoutes, { prefix: '/api/v1/nfe' })
   await fastify.register(whatsappRoutes, { prefix: '/api/v1/whatsapp' })
+  await fastify.register(settingsRoutes, { prefix: '/api/v1/settings' })
 
   // ─── AI Chat endpoint ──────────────────────────────────────────
 
