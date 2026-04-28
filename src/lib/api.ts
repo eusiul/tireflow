@@ -333,6 +333,31 @@ export const settings = {
 
   updateUser: (data: { name: string }) =>
     apiFetch<{ id: string; name: string; email: string; role: string }>('/settings/user', { method: 'PATCH', body: JSON.stringify(data) }),
+
+  createUser: (data: { name: string; email: string; password: string; role: 'admin' | 'seller' | 'cashier' }) =>
+    apiFetch<{ id: string; name: string; email: string; role: string; is_active: boolean }>('/settings/users', { method: 'POST', body: JSON.stringify(data) }),
+
+  toggleUser: (id: string, is_active: boolean) =>
+    apiFetch<{ id: string; name: string; role: string; is_active: boolean }>(`/settings/users/${id}`, { method: 'PATCH', body: JSON.stringify({ is_active }) }),
+}
+
+// ─── Reports ──────────────────────────────────────────────────────────────────
+
+export const reports = {
+  summary: () => apiFetch<{ revenue: number; salesCount: number; avgTicket: number; productsCount: number; clientsCount: number }>('/reports/summary'),
+  revenue: () => apiFetch<{ data: Array<{ month: string; revenue: number; salesCount: number }> }>('/reports/revenue'),
+  topProducts: () => apiFetch<{ data: Array<{ name: string; sold: number; revenue: number }> }>('/reports/top-products'),
+  topClients: () => apiFetch<{ data: Array<{ id: string; name: string; totalSpent: number; totalVisits: number }> }>('/reports/top-clients'),
+  paymentMethods: () => apiFetch<{ data: Array<{ method: string; amount: number; count: number; pct: number }> }>('/reports/payment-methods'),
+}
+
+// ─── Alerts ───────────────────────────────────────────────────────────────────
+
+export const alertsApi = {
+  list: () => apiFetch<{ alerts: Array<{ id: string; type: string; severity: string; title: string; message: string; is_read: boolean; created_at: string }> }>('/alerts'),
+  markRead: (id: string) => apiFetch(`/alerts/${id}/read`, { method: 'PATCH' }),
+  markAllRead: () => apiFetch('/alerts/read-all', { method: 'PATCH' }),
+  dismiss: (id: string) => apiFetch(`/alerts/${id}`, { method: 'DELETE' }),
 }
 
 // ─── AI Chat ──────────────────────────────────────────────────────────────────

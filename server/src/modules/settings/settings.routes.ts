@@ -95,6 +95,57 @@ export async function settingsRoutes(fastify: FastifyInstance) {
     return { users: rows }
   })
 
+  // ─── POST /settings/users — create user (admin only) ──────────
+  fastify.post('/users', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    if (request.userRole !== 'admin') {
+      return reply.code(403).send({ error: 'Only admins can create users' })
+    }
+    const schema = z.object({
+      name: z.string().min(2),
+      email: z.string().email(),
+      password: z.string().min(8),
+      role: z.enum(['admin', 'seller', 'cashier']),
+    })
+    const body = schema.safeParse(request.body)
+    if (!body.success) return reply.code(400).send({ error: 'Invalid input', details: body.error.flatten() })
+
+    const { name, email, password, role } = body.data
+
+    const { rows: existing } = await query(
+      'SELECT id FROM users WHERE email = $1 AND tenant_id = $2',
+      [email.toLowerCase(), request.tenantId]
+    )
+    if (existing.length > 0) return reply.code(409).send({ error: 'Email already in use' })
+
+    const hash = await bcrypt.hash(password, 12)
+    const { rows: [user] } = await query(
+      `INSERT INTO users (tenant_id, name, email, password_hash, role, is_active)
+       VALUES ($1, $2, $3, $4, $5, true)
+       RETURNING id, name, email, role, is_active, created_at`,
+      [request.tenantId, name, email.toLowerCase(), hash, role]
+    )
+    return reply.code(201).send(user)
+  })
+
+  // ─── PATCH /settings/users/:id — toggle active ─────────────────
+  fastify.patch('/users/:id', { preHandler: [fastify.authenticate] }, async (request, reply) => {
+    if (request.userRole !== 'admin') {
+      return reply.code(403).send({ error: 'Only admins can modify users' })
+    }
+    const { id } = request.params as { id: string }
+    const { is_active } = request.body as { is_active: boolean }
+
+    if (id === request.userId) return reply.code(400).send({ error: 'Cannot deactivate yourself' })
+
+    const { rows: [user] } = await query(
+      `UPDATE users SET is_active = $1 WHERE id = $2 AND tenant_id = $3
+       RETURNING id, name, email, role, is_active`,
+      [is_active, id, request.tenantId]
+    )
+    if (!user) return reply.code(404).send({ error: 'User not found' })
+    return user
+  })
+
   // ─── PATCH /settings/user ──────────────────────────────────────
   fastify.patch('/user', { preHandler: [fastify.authenticate] }, async (request, reply) => {
     const schema = z.object({

@@ -76,12 +76,36 @@
       "lowStock": "Baixo estoque"
     }
   },
+  "reports": {
+    "title": "Relatórios",
+    "subtitle": "Análises detalhadas do negócio",
+    "loading": "Carregando dados...",
+    "noData": "Sem dados no período",
+    "kpi": {
+      "revenue": "Receita (30 dias)",
+      "sales": "Vendas (30 dias)",
+      "products": "Produtos ativos",
+      "clients": "Clientes"
+    },
+    "monthlyRevenue": "Receita Mensal",
+    "monthlySubtitle": "Últimos 6 meses",
+    "topProducts": "Mais Vendidos",
+    "topProductsSub": "Por unidades (30 dias)",
+    "topClients": "Melhores Clientes",
+    "topClientsSub": "Por volume de compras",
+    "paymentMethods": "Formas de Pagamento",
+    "paymentMethodsSub": "Distribuição do mês",
+    "units": "{{count}} un",
+    "visits": "{{count}} visita",
+    "visits_plural": "{{count}} visitas",
+    "revenue_label": "Receita"
+  },
   "settings": {
     "title": "Configurações",
     "subtitle": "Gerencie sua conta e preferências",
     "tabs": {
       "company": "Empresa",
-      "appearance": "Aparência",
+      "appearance": "Idioma",
       "users": "Usuários",
       "security": "Segurança"
     },
@@ -100,13 +124,27 @@
       "savedMessage": "As alterações foram aplicadas."
     },
     "appearance": {
-      "title": "Aparência",
-      "language": "Idioma"
+      "title": "Idioma",
+      "language": "Selecione o idioma"
     },
     "users": {
       "title": "Usuários",
-      "invite": "Convidar usuário",
-      "role": "Função"
+      "invite": "Novo usuário",
+      "role": "Função",
+      "createTitle": "Criar novo usuário",
+      "name": "Nome completo",
+      "email": "E-mail",
+      "password": "Senha",
+      "role_admin": "Administrador",
+      "role_seller": "Vendedor",
+      "role_cashier": "Caixa",
+      "adminDesc": "Acesso total ao sistema",
+      "sellerDesc": "Vendas, estoque e clientes",
+      "cashierDesc": "Somente ponto de venda",
+      "created": "Usuário criado com sucesso!",
+      "deactivate": "Desativar",
+      "activate": "Ativar",
+      "emailExists": "Este e-mail já está em uso."
     },
     "security": {
       "title": "Segurança",

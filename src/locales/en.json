@@ -76,19 +76,43 @@
       "lowStock": "Low stock"
     }
   },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Detailed business analytics",
+    "loading": "Loading data...",
+    "noData": "No data available",
+    "kpi": {
+      "revenue": "Revenue (30 days)",
+      "sales": "Sales (30 days)",
+      "products": "Active products",
+      "clients": "Clients"
+    },
+    "monthlyRevenue": "Monthly Revenue",
+    "monthlySubtitle": "Last 6 months",
+    "topProducts": "Top Products",
+    "topProductsSub": "By units sold (30 days)",
+    "topClients": "Top Clients",
+    "topClientsSub": "By purchase volume",
+    "paymentMethods": "Payment Methods",
+    "paymentMethodsSub": "This month's distribution",
+    "units": "{{count}} units",
+    "visits": "{{count}} visit",
+    "visits_plural": "{{count}} visits",
+    "revenue_label": "Revenue"
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "Manage your account and preferences",
     "tabs": {
       "company": "Company",
-      "appearance": "Appearance",
+      "appearance": "Language",
       "users": "Users",
       "security": "Security"
     },
     "company": {
       "title": "Company data",
       "name": "Company name",
-      "cnpj": "Tax ID",
+      "cnpj": "CNPJ",
       "phone": "Phone",
       "email": "Email",
       "address": "Address",
@@ -100,13 +124,27 @@
       "savedMessage": "Changes have been applied."
     },
     "appearance": {
-      "title": "Appearance",
-      "language": "Language"
+      "title": "Language",
+      "language": "Select language"
     },
     "users": {
       "title": "Users",
-      "invite": "Invite user",
-      "role": "Role"
+      "invite": "New user",
+      "role": "Role",
+      "createTitle": "Create new user",
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "role_admin": "Administrator",
+      "role_seller": "Seller",
+      "role_cashier": "Cashier",
+      "adminDesc": "Full system access",
+      "sellerDesc": "Sales, inventory and clients",
+      "cashierDesc": "Point of sale only",
+      "created": "User created successfully!",
+      "deactivate": "Deactivate",
+      "activate": "Activate",
+      "emailExists": "This email is already in use."
     },
     "security": {
       "title": "Security",

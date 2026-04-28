@@ -76,19 +76,43 @@
       "lowStock": "Stock bajo"
     }
   },
+  "reports": {
+    "title": "Informes",
+    "subtitle": "Análisis detallados del negocio",
+    "loading": "Cargando datos...",
+    "noData": "Sin datos en el período",
+    "kpi": {
+      "revenue": "Ingresos (30 días)",
+      "sales": "Ventas (30 días)",
+      "products": "Productos activos",
+      "clients": "Clientes"
+    },
+    "monthlyRevenue": "Ingresos Mensuales",
+    "monthlySubtitle": "Últimos 6 meses",
+    "topProducts": "Más Vendidos",
+    "topProductsSub": "Por unidades (30 días)",
+    "topClients": "Mejores Clientes",
+    "topClientsSub": "Por volumen de compras",
+    "paymentMethods": "Formas de Pago",
+    "paymentMethodsSub": "Distribución del mes",
+    "units": "{{count}} un",
+    "visits": "{{count}} visita",
+    "visits_plural": "{{count}} visitas",
+    "revenue_label": "Ingresos"
+  },
   "settings": {
     "title": "Configuración",
     "subtitle": "Gestiona tu cuenta y preferencias",
     "tabs": {
       "company": "Empresa",
-      "appearance": "Apariencia",
+      "appearance": "Idioma",
       "users": "Usuarios",
       "security": "Seguridad"
     },
     "company": {
       "title": "Datos de la empresa",
       "name": "Nombre de la empresa",
-      "cnpj": "RUC / NIT",
+      "cnpj": "CNPJ",
       "phone": "Teléfono",
       "email": "Correo electrónico",
       "address": "Dirección",
@@ -100,13 +124,27 @@
       "savedMessage": "Los cambios han sido aplicados."
     },
     "appearance": {
-      "title": "Apariencia",
-      "language": "Idioma"
+      "title": "Idioma",
+      "language": "Selecciona el idioma"
     },
     "users": {
       "title": "Usuarios",
-      "invite": "Invitar usuario",
-      "role": "Rol"
+      "invite": "Nuevo usuario",
+      "role": "Rol",
+      "createTitle": "Crear nuevo usuario",
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "role_admin": "Administrador",
+      "role_seller": "Vendedor",
+      "role_cashier": "Cajero",
+      "adminDesc": "Acceso total al sistema",
+      "sellerDesc": "Ventas, inventario y clientes",
+      "cashierDesc": "Solo punto de venta",
+      "created": "¡Usuario creado exitosamente!",
+      "deactivate": "Desactivar",
+      "activate": "Activar",
+      "emailExists": "Este correo ya está en uso."
     },
     "security": {
       "title": "Seguridad",

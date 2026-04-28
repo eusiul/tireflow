@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { alertsApi } from '@/lib/api'
 import type { Alert } from '@/types'
 
 interface Toast {
@@ -9,42 +10,13 @@ interface Toast {
   duration?: number
 }
 
-const INITIAL_NOTIFICATIONS: Alert[] = [
-  {
-    id: 'n01',
-    type: 'no_stock',
-    severity: 'critical',
-    title: 'Sem estoque: Pirelli P7 Cinturato 195/55R15',
-    message: 'Produto com estoque zerado. Solicite reposição imediatamente.',
-    read: false,
-    createdAt: new Date(Date.now() - 7200000).toISOString(),
-  },
-  {
-    id: 'n02',
-    type: 'low_stock',
-    severity: 'warning',
-    title: 'Estoque baixo: Bridgestone Ecopia 185/65R15',
-    message: 'Restam apenas 2 unidades (mínimo: 6). Considere repor o estoque.',
-    read: false,
-    createdAt: new Date(Date.now() - 14400000).toISOString(),
-  },
-  {
-    id: 'n03',
-    type: 'low_stock',
-    severity: 'warning',
-    title: 'Estoque baixo: Continental ContiSportContact 5',
-    message: 'Restam apenas 3 unidades (mínimo: 4). Considere repor o estoque.',
-    read: false,
-    createdAt: new Date(Date.now() - 86400000).toISOString(),
-  },
-]
-
 interface UIState {
   sidebarCollapsed: boolean
   commandPaletteOpen: boolean
   toasts: Toast[]
   notificationItems: Alert[]
   notificationsOpen: boolean
+  notificationsLoaded: boolean
   toggleSidebar: () => void
   setSidebarCollapsed: (v: boolean) => void
   openCommandPalette: () => void
@@ -53,8 +25,9 @@ interface UIState {
   removeToast: (id: string) => void
   toggleNotifications: () => void
   closeNotifications: () => void
-  markAllRead: () => void
-  dismissNotification: (id: string) => void
+  loadNotifications: () => Promise<void>
+  markAllRead: () => Promise<void>
+  dismissNotification: (id: string) => Promise<void>
 }
 
 let toastId = 0
@@ -63,8 +36,9 @@ export const useUIStore = create<UIState>((set, get) => ({
   sidebarCollapsed: false,
   commandPaletteOpen: false,
   toasts: [],
-  notificationItems: INITIAL_NOTIFICATIONS,
+  notificationItems: [],
   notificationsOpen: false,
+  notificationsLoaded: false,
 
   toggleSidebar: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
   setSidebarCollapsed: (v) => set({ sidebarCollapsed: v }),
@@ -86,13 +60,39 @@ export const useUIStore = create<UIState>((set, get) => ({
   toggleNotifications: () => set((s) => ({ notificationsOpen: !s.notificationsOpen })),
   closeNotifications: () => set({ notificationsOpen: false }),
 
-  markAllRead: () =>
+  loadNotifications: async () => {
+    try {
+      const res = await alertsApi.list()
+      const mapped: Alert[] = res.alerts.map((a) => ({
+        id: a.id,
+        type: a.type as Alert['type'],
+        severity: a.severity as Alert['severity'],
+        title: a.title,
+        message: a.message,
+        read: a.is_read,
+        createdAt: a.created_at,
+      }))
+      set({ notificationItems: mapped, notificationsLoaded: true })
+    } catch {
+      set({ notificationsLoaded: true })
+    }
+  },
+
+  markAllRead: async () => {
+    try {
+      await alertsApi.markAllRead()
+    } catch { /* ignore */ }
     set((s) => ({
       notificationItems: s.notificationItems.map((n) => ({ ...n, read: true })),
-    })),
+    }))
+  },
 
-  dismissNotification: (id) =>
+  dismissNotification: async (id) => {
+    try {
+      await alertsApi.dismiss(id)
+    } catch { /* ignore */ }
     set((s) => ({
       notificationItems: s.notificationItems.filter((n) => n.id !== id),
-    })),
+    }))
+  },
 }))
