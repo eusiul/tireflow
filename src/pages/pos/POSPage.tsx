@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Search, Plus, Minus, Trash2, ShoppingCart, User, Zap,
@@ -17,17 +18,21 @@ import { Modal } from '@/components/ui/Modal'
 import { cn } from '@/lib/cn'
 import type { Product, Client } from '@/types'
 
-const CATEGORY_LABELS: Record<string, string> = {
-  tire: 'Pneu', rim: 'Roda', service: 'Serviço', accessory: 'Acessório',
+const CATEGORY_KEYS: Record<string, string> = {
+  tire: 'pos.category_tire',
+  rim: 'pos.category_rim',
+  service: 'pos.category_service',
+  accessory: 'pos.category_accessory',
 }
 
-const PAYMENT_METHODS = [
-  { id: 'pix', label: 'Pix', icon: <Smartphone size={18} /> },
-  { id: 'cash', label: 'Dinheiro', icon: <Banknote size={18} /> },
-  { id: 'card', label: 'Cartão', icon: <CreditCard size={18} /> },
+const PAYMENT_METHOD_DEFS = [
+  { id: 'pix', labelKey: 'pos.paymentPix', icon: <Smartphone size={18} /> },
+  { id: 'cash', labelKey: 'pos.paymentCash', icon: <Banknote size={18} /> },
+  { id: 'card', labelKey: 'pos.paymentCard', icon: <CreditCard size={18} /> },
 ]
 
 function ProductCard({ product, onAdd }: { product: Product; onAdd: (p: Product) => void }) {
+  const { t } = useTranslation()
   const isService = product.category === 'service'
   const outOfStock = product.stock <= 0 && !isService
   const lowStock = product.stock <= product.minStock && !isService && product.stock > 0
@@ -72,7 +77,7 @@ function ProductCard({ product, onAdd }: { product: Product; onAdd: (p: Product)
             ? 'bg-amber-500/10 text-amber-400'
             : 'bg-emerald-500/10 text-emerald-400'
         )}>
-          {isService ? 'Serviço' : outOfStock ? 'Sem estoque' : `${product.stock} un`}
+          {isService ? t('pos.service') : outOfStock ? t('pos.outOfStock') : `${product.stock} un`}
         </span>
       </div>
     </motion.button>
@@ -80,6 +85,7 @@ function ProductCard({ product, onAdd }: { product: Product; onAdd: (p: Product)
 }
 
 export function POSPage() {
+  const { t } = useTranslation()
   const [allProducts, setAllProducts] = useState<Product[]>([])
   const [productsLoading, setProductsLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -94,7 +100,7 @@ export function POSPage() {
   const [clientsLoading, setClientsLoading] = useState(false)
   const searchRef = useRef<HTMLInputElement>(null)
   const { addToast } = useUIStore()
-  const { user } = useAuthStore()
+  const { user: _user } = useAuthStore()
   const cart = useCartStore()
 
   const openClientSelector = async () => {
@@ -105,7 +111,7 @@ export function POSPage() {
       const res = await clientsApi.list()
       setAllClients(res.clients)
     } catch {
-      addToast({ type: 'error', title: 'Erro ao carregar clientes' })
+      addToast({ type: 'error', title: t('pos.errorLoadClients') })
     } finally {
       setClientsLoading(false)
     }
@@ -148,9 +154,9 @@ export function POSPage() {
       try {
         const product = await productsApi.getByBarcode(code)
         cart.addItem(product)
-        addToast({ type: 'success', title: `${product.name} adicionado`, message: `${product.brand} · ${product.size}` })
+        addToast({ type: 'success', title: t('pos.productAdded', { name: product.name }), message: `${product.brand} · ${product.size}` })
       } catch {
-        addToast({ type: 'warning', title: 'Produto não encontrado', message: `Código: ${code}` })
+        addToast({ type: 'warning', title: t('pos.productNotFound'), message: t('pos.barcodeCode', { code }) })
       }
     },
   })
@@ -177,10 +183,10 @@ export function POSPage() {
         setPaid(false)
         setPaymentOpen(false)
         cart.clearCart()
-        addToast({ type: 'success', title: 'Venda finalizada!', message: `Total: ${formatCurrency(totalValue)}` })
+        addToast({ type: 'success', title: t('pos.saleFinalized'), message: t('pos.saleTotal', { value: formatCurrency(totalValue) }) })
       }, 2000)
     } catch {
-      addToast({ type: 'error', title: 'Erro ao finalizar', message: 'Tente novamente.' })
+      addToast({ type: 'error', title: t('pos.errorFinalize'), message: t('pos.tryAgain') })
     } finally {
       setSaleLoading(false)
     }
@@ -198,7 +204,7 @@ export function POSPage() {
             ref={searchRef}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar produto, marca, medida ou código de barras..."
+            placeholder={t('pos.searchPlaceholder')}
             icon={<Search size={15} />}
             size="lg"
           />
@@ -209,10 +215,12 @@ export function POSPage() {
                 onClick={() => setSearch(cat === 'tire' ? '' : cat)}
                 className="text-xs px-2.5 py-1 rounded-full bg-surface-700 border border-surface-600 text-zinc-400 hover:text-zinc-200 hover:bg-surface-600 transition-all"
               >
-                {CATEGORY_LABELS[cat]}
+                {t(CATEGORY_KEYS[cat])}
               </button>
             ))}
-            <span className="text-xs text-zinc-600 ml-auto">{productsLoading ? '...' : `${filtered.length} produto${filtered.length !== 1 ? 's' : ''}`}</span>
+            <span className="text-xs text-zinc-600 ml-auto">
+              {productsLoading ? '...' : t('pos.productsCount', { count: filtered.length })}
+            </span>
           </div>
         </div>
 
@@ -225,7 +233,7 @@ export function POSPage() {
           ) : filtered.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-48 gap-3">
               <Package size={32} className="text-zinc-700" />
-              <p className="text-sm text-zinc-500">Nenhum produto encontrado</p>
+              <p className="text-sm text-zinc-500">{t('pos.clientNotFound')}</p>
             </div>
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2">
@@ -243,7 +251,7 @@ export function POSPage() {
         <div className="flex items-center justify-between px-4 h-14 border-b border-surface-700 shrink-0">
           <div className="flex items-center gap-2">
             <ShoppingCart size={16} className="text-zinc-400" />
-            <span className="text-sm font-semibold text-zinc-100">Carrinho</span>
+            <span className="text-sm font-semibold text-zinc-100">{t('pos.cart')}</span>
             {cart.itemCount() > 0 && (
               <Badge variant="brand" size="sm">{cart.itemCount()}</Badge>
             )}
@@ -253,7 +261,7 @@ export function POSPage() {
               onClick={cart.clearCart}
               className="text-xs text-zinc-500 hover:text-red-400 transition-colors"
             >
-              Limpar
+              {t('pos.clearCart')}
             </button>
           )}
         </div>
@@ -280,7 +288,7 @@ export function POSPage() {
                     )}
                   </>
                 ) : (
-                  <span className="text-sm text-zinc-500">Selecionar cliente (opcional)</span>
+                  <span className="text-sm text-zinc-500">{t('pos.selectClient')}</span>
                 )}
               </div>
             </button>
@@ -288,7 +296,6 @@ export function POSPage() {
               <button
                 onClick={() => cart.setClient(null)}
                 className="p-2 rounded-lg hover:bg-surface-700 text-zinc-500 hover:text-zinc-300 transition-colors shrink-0"
-                title="Remover cliente"
               >
                 <UserX size={14} />
               </button>
@@ -308,8 +315,8 @@ export function POSPage() {
                 <div className="w-12 h-12 rounded-2xl bg-surface-800 flex items-center justify-center">
                   <ShoppingCart size={20} className="text-zinc-600" />
                 </div>
-                <p className="text-sm text-zinc-500">Carrinho vazio</p>
-                <p className="text-xs text-zinc-600">Clique em um produto para adicionar</p>
+                <p className="text-sm text-zinc-500">{t('pos.emptyCart')}</p>
+                <p className="text-xs text-zinc-600">{t('pos.emptyCartHint')}</p>
               </motion.div>
             ) : (
               cart.items.map((item) => (
@@ -360,15 +367,15 @@ export function POSPage() {
         {/* Cart summary */}
         <div className="border-t border-surface-700 p-4 space-y-2 shrink-0">
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500">Subtotal</span>
+            <span className="text-zinc-500">{t('pos.subtotal')}</span>
             <span className="text-zinc-300 tabular">{formatCurrency(cart.subtotal())}</span>
           </div>
           <div className="flex justify-between text-sm">
-            <span className="text-zinc-500">Desconto</span>
+            <span className="text-zinc-500">{t('pos.discount')}</span>
             <span className="text-zinc-300 tabular">-{formatCurrency(0)}</span>
           </div>
           <div className="flex justify-between text-base font-bold border-t border-surface-700 pt-2">
-            <span className="text-zinc-100">Total</span>
+            <span className="text-zinc-100">{t('pos.total')}</span>
             <span className="text-zinc-100 tabular">{formatCurrency(cart.total())}</span>
           </div>
           <Button
@@ -379,7 +386,7 @@ export function POSPage() {
             disabled={cart.items.length === 0}
             onClick={() => setPaymentOpen(true)}
           >
-            Finalizar Venda
+            {t('pos.finalizeSale')}
           </Button>
         </div>
       </div>
@@ -388,8 +395,8 @@ export function POSPage() {
       <Modal
         open={clientSelectorOpen}
         onClose={() => setClientSelectorOpen(false)}
-        title="Selecionar Cliente"
-        subtitle="Busque por nome, placa, telefone ou CPF"
+        title={t('pos.selectClientTitle')}
+        subtitle={t('pos.selectClientSubtitle')}
         size="md"
       >
         <div className="space-y-3">
@@ -409,7 +416,7 @@ export function POSPage() {
               <div className="flex flex-col items-center gap-2 py-8 text-center">
                 <User size={24} className="text-zinc-700" />
                 <p className="text-sm text-zinc-500">
-                  {clientSearch ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}
+                  {clientSearch ? t('pos.clientNotFound') : t('pos.noClients')}
                 </p>
               </div>
             ) : (
@@ -452,8 +459,8 @@ export function POSPage() {
       <Modal
         open={paymentOpen}
         onClose={() => !paid && setPaymentOpen(false)}
-        title="Finalizar Venda"
-        subtitle={`Total: ${formatCurrency(cart.total())}`}
+        title={t('pos.finalizeSale')}
+        subtitle={`${t('pos.total')}: ${formatCurrency(cart.total())}`}
         size="sm"
       >
         {paid ? (
@@ -470,14 +477,14 @@ export function POSPage() {
             >
               <CheckCircle size={32} className="text-emerald-400" />
             </motion.div>
-            <p className="text-lg font-semibold text-zinc-100">Venda concluída!</p>
+            <p className="text-lg font-semibold text-zinc-100">{t('pos.saleDone')}</p>
             <p className="text-sm text-zinc-400">{formatCurrency(cart.total())} via {paymentMethod.toUpperCase()}</p>
           </motion.div>
         ) : (
           <div className="space-y-4">
-            <p className="text-sm text-zinc-400">Selecione a forma de pagamento:</p>
+            <p className="text-sm text-zinc-400">{t('pos.selectPayment')}</p>
             <div className="grid grid-cols-3 gap-2">
-              {PAYMENT_METHODS.map((m) => (
+              {PAYMENT_METHOD_DEFS.map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setPaymentMethod(m.id)}
@@ -489,17 +496,17 @@ export function POSPage() {
                   )}
                 >
                   {m.icon}
-                  <span className="text-xs font-medium">{m.label}</span>
+                  <span className="text-xs font-medium">{t(m.labelKey)}</span>
                 </button>
               ))}
             </div>
             {paymentMethod === 'cash' && (
               <Input
-                label="Valor recebido"
+                label={t('pos.amountReceived')}
                 value={amountReceived}
                 onChange={(e) => setAmountReceived(e.target.value)}
                 placeholder="0,00"
-                hint={change >= 0 ? `Troco: ${formatCurrency(change)}` : ''}
+                hint={change >= 0 ? t('pos.change', { value: formatCurrency(change) }) : ''}
               />
             )}
             {paymentMethod === 'pix' && (
@@ -511,14 +518,14 @@ export function POSPage() {
                     ))}
                   </div>
                 </div>
-                <p className="text-xs text-zinc-400 text-center">Escaneie o QR Code ou copie a chave Pix</p>
+                <p className="text-xs text-zinc-400 text-center">{t('pos.pixScan')}</p>
                 <button className="text-xs text-brand-400 hover:text-brand-300 transition-colors">
-                  Copiar chave Pix
+                  {t('pos.pixCopy')}
                 </button>
               </div>
             )}
             <Button variant="primary" size="lg" className="w-full" icon={<Zap size={16} />} onClick={handleFinalize} loading={saleLoading}>
-              {saleLoading ? 'Processando...' : 'Confirmar Pagamento'}
+              {saleLoading ? t('pos.processing') : t('pos.confirmPayment')}
             </Button>
           </div>
         )}
